@@ -61,8 +61,42 @@ inquirer
 
     });
 
-function viewDepartments() {
+const viewDepartments = () => {
+    db.query('SELECT id AS "Department ID, name AS "Department Name"'), (err, result) => {console.table(result);}
+}
+const viewRoles = () => {
+    db.query('SELECT role.id AS "Role ID, role.title AS "Role", role.department_id AS "Department ID"'), (err, result) => {console.table(result);}
+}
+const viewEmployees = () => {
+    db.query('SELECT id AS "Employee ID, employee.first_name AS "First Name", employee.last_name AS "Last Name", employee.role_id AS "Role ID", employee.manager_id AS "Manager"'), (err, result) => {console.table(result);}
+}
+const addDepartment = () => {
+    inquirer
+        .prompt([{
+            name: empFirstName,
+            type: input,
+            message: "new employee's first name?"
+        },
+    {
+        name: empLastName,
+        type: input,
+        message: "new employee's last name?"
+    },
+{
+    name: empRole,
+    type: input,
+    message: "new employee's role?"
+},
+{
+    name: empManager,
+    type: input,
+    message: "new employee's manager?"
+}
+])
+    .then(answer => {
+    const query = db.query('SELECT id AS "Department ID, name AS "Department Name"'), (err, result) => {console.table(result);}
 
+})
 }
 
 
