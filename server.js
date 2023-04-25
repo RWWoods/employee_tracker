@@ -8,11 +8,17 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
 
-const connection = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    database: 'test'
-  });
+const db = mysql.createConnection(
+    {
+      host: 'localhost',
+      // MySQL username,
+      user: 'root',
+      // MySQL password
+      password: 'Correcthorse',
+      database: 'company_db'
+    },
+    console.log(`Connected to the company_db database.`)
+  );
 
 inquirer
     .prompt([
@@ -23,52 +29,51 @@ inquirer
             choices: ["View all departments", "View all roles", "View all employees", "Add a department", "Add a role", "Add an employee", "Update an employee role"]
         },
     ])
-    .then((data) => {
-        switch (type) {
-            case 'View all departments': {
-               return viewDepartments();
-               break;
-            }
-            case 'View all roles': {
+    .then(function(answer) {
+        if (answer == "View all departments") {
+                return viewDepartments();
+            } else if (answer == "View all roles")
+{
                 return viewRoles();
-                break;
-            }
-            case 'View all employees': {
+
+            } else if (answer == "View all employees")
+{
                 return viewEmployees();
-                break;
-            }
-            case 'Add a department': {
+            } else if (answer == "Add a department")
+{
                 return addDepartment();
-                break;
-            }
-            case 'Add a role': {
-                return allowedNodeEnvironmentFlags();
-                break;
-            }
-            case 'Add an employee': {
+
+            } else if (answer == "Add a role"){
+                return addRole();
+            } else if (answer == "Add an employee")
+{
                 return addEmployee();
-                break;
-            }
-            case 'Update an employee role': {
+            } else if (answer == "Update an employee role") {
                 return updateEmployee();
-                break;
+            } else {
+                return;
             }
 
 
-            default:
-                return undefined;
-        }
 
     });
 
 const viewDepartments = () => {
-    db.query('SELECT id AS "Department ID, name AS "Department Name"'), (err, result) => {console.table(result);}
+    db.query('SELECT id AS "Department ID, name AS "Department Name"'), (err, result) => { if (err) {
+        throw err }
+        console.log(results)
+        console.table(result); }
 }
 const viewRoles = () => {
-    db.query('SELECT role.id AS "Role ID, role.title AS "Role", role.department_id AS "Department ID"'), (err, result) => {console.table(result);}
+    db.query('SELECT role.id AS "Role ID, role.title AS "Role", role.department_id AS "Department ID"'), (err, result) => { if (err) {
+        throw err }
+        console.log(results)
+        console.table(result); }
 }
 const viewEmployees = () => {
-    db.query('SELECT id AS "Employee ID, employee.first_name AS "First Name", employee.last_name AS "Last Name", employee.role_id AS "Role ID", employee.manager_id AS "Manager"'), (err, result) => {console.table(result);}
+    db.query('SELECT id AS "Employee ID, employee.first_name AS "First Name", employee.last_name AS "Last Name", employee.role_id AS "Role ID", employee.manager_id AS "Manager"'), (err, result) => { if (err) {
+        throw err }
+        console.table(result); }
 }
 const addDepartment = () => {
     inquirer
@@ -77,26 +82,26 @@ const addDepartment = () => {
             type: input,
             message: "new employee's first name?"
         },
-    {
-        name: empLastName,
-        type: input,
-        message: "new employee's last name?"
-    },
-{
-    name: empRole,
-    type: input,
-    message: "new employee's role?"
-},
-{
-    name: empManager,
-    type: input,
-    message: "new employee's manager?"
-}
-])
-    .then(answer => {
-    const query = db.query('SELECT id AS "Department ID, name AS "Department Name"'), (err, result) => {console.table(result);}
+        {
+            name: empLastName,
+            type: input,
+            message: "new employee's last name?"
+        },
+        {
+            name: empRole,
+            type: input,
+            message: "new employee's role?"
+        },
+        {
+            name: empManager,
+            type: input,
+            message: "new employee's manager?"
+        }
+        ])
+        .then(answer => {
+            const query = (`INSERT INTO employee(first_name, last_name, role_id, manager_id) VALUES ("${answer.empFirstName}"), ("${answer.empLastName}"),(SELECT id FROM role WHERE title = "${answer.empRole}"), (SELECT id FROM employee WHERE last_name = "${answer.empManager}")`)
 
-})
+        })
 }
 
 
